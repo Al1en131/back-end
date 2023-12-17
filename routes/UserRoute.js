@@ -2,7 +2,7 @@ const express = require("express");
 const routes = express();
 const {
   getUsers,
-  createUsers,
+  register,
   updateUsers,
   deleteUsers,
   findUsersById,
@@ -10,7 +10,7 @@ const {
 
 routes.get("/users", getUsers);
 routes.get("/users/:email", findUsersById);
-routes.post("/users", createUsers);
+routes.post("/users", register);
 routes.put("/users", updateUsers);
 routes.delete("/users", deleteUsers);
 

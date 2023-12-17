@@ -9,32 +9,12 @@ const getUsers = async (req, res) => {
   }
 };
 
-const createUsers = async (req, res) => {
-  const {
-    nama,
-    email,
-    no_hp,
-    alamat,
-    password,
-    about,
-    profil,
-    background,
-    language,
-  } = req.body;
+const register = async (req, res) => {
+  const { nama, email, no_hp, alamat, password } = req.body;
   try {
     const { resultId: id } = await query(
-      "insert into users(nama, email, no_hp, alamat, password, about, profil, background, language ) values(?,?,?,?,?,?,?,?,?)",
-      [
-        nama,
-        email,
-        no_hp,
-        alamat,
-        password,
-        about,
-        profil,
-        background,
-        language,
-      ]
+      "insert into users(nama, email, no_hp, alamat, password) values(?,?,?,?,?)",
+      [nama, email, no_hp, alamat, password]
     );
     res.status(200).json({ id, ...req.body });
   } catch (error) {
@@ -75,6 +55,7 @@ const updateUsers = async (req, res) => {
     no_hp,
     alamat,
     password,
+    profil_url,
     about,
     profil,
     background,
@@ -82,13 +63,14 @@ const updateUsers = async (req, res) => {
   } = req.body;
   try {
     const { resultId } = await query(
-      "UPDATE users SET  nama=?, email=?, no_hp=?, alamat=?, password=?, about=? , profil=? , background=? , language=? WHERE id=?",
+      "UPDATE users SET  nama=?, email=?, no_hp=?, alamat=?, password=?, profil_url=?, about=? , profil=? , background=? , language=? WHERE id=?",
       [
         nama,
         email,
         no_hp,
         alamat,
         password,
+        profil_url,
         about,
         profil,
         background,
@@ -120,7 +102,7 @@ const deleteUsers = async (req, res) => {
 
 module.exports = {
   getUsers,
-  createUsers,
+  register,
   updateUsers,
   deleteUsers,
   findUsersById,
