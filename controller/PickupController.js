@@ -107,15 +107,15 @@ const deletePickup = async (req, res) => {
   const { id } = req.body;
 
   try {
-    const { resultId } = await query("DELETE FROM pickup WHERE id = ?", [id]);
+    const result = await query("DELETE FROM pickup WHERE id = ?", [id]);
 
-    if (resultId !== undefined && resultId === 1) {
-      res.status(404).json({ success: false, message: "Invalid Data" });
-    } else {
-      res
-        .status(200)
-        .json({ success: true, message: "Pickup berhasil dihapus" });
+    if (result.affectedRows === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Data pickup tidak ditemukan" });
     }
+
+    res.status(200).json({ success: true, message: "Pickup berhasil dihapus" });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
