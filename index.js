@@ -13,5 +13,5 @@ app.use(bodyParser.json());
 app.use(routes);
 
 server.listen(PORT, () =>
-  console.log(`Server already running at http://localhost:${PORT}`)
+  console.log(`Server already running at http://127.0.0.1:${PORT}`)
 );
