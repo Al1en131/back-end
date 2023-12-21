@@ -5,6 +5,8 @@ const users = require("./UserRoute");
 const news = require("./NewsRoute");
 const education = require("./EducationRoute");
 const community = require("./CommunityRoute");
+const login = require("./auth/AuthRoutes");
+const pickups = require("./PickupRoute");
 
 const apiUrl = "/api/v1";
 
@@ -12,5 +14,7 @@ app.use(apiUrl, users);
 app.use(apiUrl, news);
 app.use(apiUrl, education);
 app.use(apiUrl, community);
+app.use(apiUrl, login);
+app.use(apiUrl, pickups);
 
 module.exports = app;

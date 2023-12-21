@@ -1,4 +1,5 @@
 const query = require("../database");
+const bcryptjs = require("bcryptjs");
 
 const getUsers = async (req, res) => {
   try {
@@ -9,19 +10,83 @@ const getUsers = async (req, res) => {
   }
 };
 
-const register = async (req, res) => {
-  const { nama, email, no_hp, alamat, password } = req.body;
-  try {
-    const { resultId: id } = await query(
-      "insert into users(nama, email, no_hp, alamat, password) values(?,?,?,?,?)",
-      [nama, email, no_hp, alamat, password]
-    );
-    res.status(200).json({ id, ...req.body });
-  } catch (error) {
-    return res.status(400).json({ message: error });
-  }
+const {
+  jwt,
+  jwtSecret,
+  jwtAlgorithm,
+  jwtExpiresIn,
+} = require("./auth/JwtConfig");
+
+const signToken = (userId) => {
+  return jwt.sign({ id: userId }, jwtSecret, {
+    algorithm: jwtAlgorithm,
+    expiresIn: jwtExpiresIn,
+  });
 };
 
+const register = async (req, res) => {
+  const {
+    nama,
+    email,
+    no_hp,
+    alamat,
+    password,
+    about,
+    profil,
+    background,
+    language,
+    headline,
+  } = req.body;
+  if (
+    nama === undefined ||
+    nama === "" ||
+    email === undefined ||
+    email === "" ||
+    password === undefined ||
+    password === "" ||
+    alamat === undefined ||
+    alamat === "" ||
+    no_hp === undefined ||
+    isNaN(+no_hp)
+  )
+    return res.status(400).json("Data tidak Valid!");
+  try {
+    const salt = await bcryptjs.genSalt(12);
+    const hash = await bcryptjs.hash(password, salt);
+
+    const { resultId } = await query(
+      "insert into users(nama, email, no_hp, alamat, password, about, profil, background, language,   headline ) values(?,?,?,?,?,?,?,?,?,?)",
+      [
+        nama,
+        email,
+        no_hp,
+        alamat,
+        hash,
+        about,
+        profil,
+        background,
+        language,
+        headline,
+      ]
+    );
+
+    const token = signToken(resultId); // Gunakan resultId langsung
+
+    return res.status(200).json({
+      success: true,
+      message: "Registrasi Berhasil! User berhasil ditambahkan",
+      token,
+      data: { id: resultId, ...req.body },
+    });
+  } catch (error) {
+    console.error("Database Error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Registrasi Gagal",
+    });
+  }
+};
 const findUsersById = async (req, res) => {
   const { email } = req.body;
 
